@@ -6,14 +6,18 @@ const session = require("express-session");
 
 const app = express();
 const server = require("http").createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    credentials: true,
+  },
+});
 
 const sessionMiddleware = session({
   secret: "secret",
   resave: false,
   saveUninitialized: false,
 });
-
-// Http connection(s)
 
 app.use(sessionMiddleware);
 app.use(passport.initialize());
@@ -22,14 +26,6 @@ app.use(express.json());
 
 // rest endpoints
 app.use("/api", indexRouter);
-
-// Socket connection
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    credentials: true,
-  },
-});
 
 const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
 
